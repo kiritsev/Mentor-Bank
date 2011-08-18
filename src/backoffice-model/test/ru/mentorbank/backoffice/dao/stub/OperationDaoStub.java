@@ -13,7 +13,6 @@ public class OperationDaoStub implements OperationDao {
 
 	@Override
 	public void saveOperation(Operation operation) throws OperationDaoException {
-		
 
 	}
 
@@ -23,7 +22,7 @@ public class OperationDaoStub implements OperationDao {
 		Operation operation = new Operation();
 		StopListInfo dstStoplistInfo = new StopListInfo();
 		dstStoplistInfo.setStatus(StopListStatus.ASKSECURITY);
-		operation.setDstStoplistInfo(dstStoplistInfo );
+		operation.setDstStoplistInfo(dstStoplistInfo);
 		result.add(operation);
 		return result;
 	}
