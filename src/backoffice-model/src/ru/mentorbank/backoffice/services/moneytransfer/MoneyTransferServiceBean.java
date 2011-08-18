@@ -1,6 +1,11 @@
 package ru.mentorbank.backoffice.services.moneytransfer;
 
+import java.util.Calendar;
+
 import ru.mentorbank.backoffice.dao.OperationDao;
+import ru.mentorbank.backoffice.dao.exception.OperationDaoException;
+import ru.mentorbank.backoffice.model.Account;
+import ru.mentorbank.backoffice.model.Operation;
 import ru.mentorbank.backoffice.model.stoplist.JuridicalStopListRequest;
 import ru.mentorbank.backoffice.model.stoplist.PhysicalStopListRequest;
 import ru.mentorbank.backoffice.model.stoplist.StopListInfo;
@@ -69,6 +74,31 @@ public class MoneyTransferServiceBean implements MoneyTransferSerice {
 			// TODO: Необходимо сделать вызов операции saveOperation и сделать
 			// соответствующий тест вызова операции operationDao.saveOperation()
 
+			Operation operation = new Operation();
+
+			Account account = new Account();
+
+			account.setAccountNumber(this.request.getSrcAccount()
+					.getAccountNumber());
+			operation.setSrcAccount(account);
+
+			account.setAccountNumber(this.request.getDstAccount()
+					.getAccountNumber());
+			operation.setDstAccount(account);
+
+			operation.setSrcStoplistInfo(this.srcStopListInfo);
+
+			operation.setDstStoplistInfo(this.dstStopListInfo);
+
+			operation.setCreateDate(Calendar.getInstance());
+
+			operation.setSentDate(Calendar.getInstance());
+
+			try {
+				operationDao.saveOperation(operation);
+			} catch (OperationDaoException e) {
+				e.printStackTrace();
+			}
 		}
 
 		private void transferDo() throws TransferException {
