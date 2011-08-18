@@ -1,5 +1,9 @@
 package ru.mentorbank.backoffice.services.moneytransfer;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -8,12 +12,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ru.mentorbank.backoffice.dao.OperationDao;
+import ru.mentorbank.backoffice.dao.exception.OperationDaoException;
+import ru.mentorbank.backoffice.model.Operation;
 import ru.mentorbank.backoffice.model.transfer.JuridicalAccountInfo;
 import ru.mentorbank.backoffice.model.transfer.TransferRequest;
 import ru.mentorbank.backoffice.services.accounts.AccountService;
 import ru.mentorbank.backoffice.services.accounts.AccountServiceBean;
 import ru.mentorbank.backoffice.services.moneytransfer.exceptions.TransferException;
-import ru.mentorbank.backoffice.services.stoplist.StopListService;
 import ru.mentorbank.backoffice.services.stoplist.StopListServiceStub;
 import ru.mentorbank.backoffice.storage.moneytransfer.OperationsSet;
 import ru.mentorbank.backoffice.test.AbstractSpringTest;
@@ -35,7 +40,7 @@ public class MoneyTransferServiceTest extends AbstractSpringTest {
 		srcAccountInfo.setInn(StopListServiceStub.INN_FOR_OK_STATUS);
 
 		dstAccountInfo = new JuridicalAccountInfo();
-		dstAccountInfo.setAccountNumber("111111111111111");
+		dstAccountInfo.setAccountNumber("222222222222222");
 		dstAccountInfo.setInn(StopListServiceStub.INN_FOR_OK_STATUS);
 
 		transferRequest = new TransferRequest();
@@ -47,10 +52,11 @@ public class MoneyTransferServiceTest extends AbstractSpringTest {
 		when(mockedAccountService.verifyBalance(dstAccountInfo)).thenReturn(
 				true);
 		moneyTransferService.setAccountService(mockedAccountService);
+
 	}
 
 	@Test
-	public void transfer() throws TransferException {
+	public void transfer() throws TransferException, OperationDaoException {
 		// fail("not implemented yet");
 
 		// TODO: Необходимо протестировать, что для хорошего перевода всё
@@ -65,16 +71,30 @@ public class MoneyTransferServiceTest extends AbstractSpringTest {
 		// verify(mockedStopListService).getJuridicalStopListInfo(null);
 		// verify(mockedAccountService).verifyBalance(null);
 
-		StopListService mockedStopListService = mock(StopListServiceStub.class);
-
+		// ####################
+		/*
+		 * StopListService mockedStopListService =
+		 * mock(StopListServiceStub.class);
+		 * moneyTransferService.setStopListService(mockedStopListService);
+		 */
 		OperationDao operationDao = new OperationsSet();
-
-		moneyTransferService.setStopListService(mockedStopListService);
 		moneyTransferService.setOperationDao(operationDao);
 
-		// JuridicalAccountInfo
+		assertTrue(operationDao.getOperations().isEmpty());
 
 		moneyTransferService.transfer(transferRequest);
 
+		assertFalse(operationDao.getOperations().isEmpty());
+		assertThat(operationDao.getOperations().size(), is(1));
+
+		Operation ops[] = {};
+		ops = operationDao.getOperations().toArray(ops);
+		assertThat(ops[0].getSrcAccount().getAccountNumber(),
+				is(srcAccountInfo.getAccountNumber()));
+		assertThat(ops[0].getDstAccount().getAccountNumber(),
+				is(dstAccountInfo.getAccountNumber()));
+
+		// verify(mockedStopListService).getJuridicalStopListInfo(null);
+		// verify(mockedAccountService).verifyBalance(null);
 	}
 }

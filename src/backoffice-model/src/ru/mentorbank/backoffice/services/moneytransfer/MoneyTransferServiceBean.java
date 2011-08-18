@@ -76,15 +76,16 @@ public class MoneyTransferServiceBean implements MoneyTransferSerice {
 
 			Operation operation = new Operation();
 
-			Account account = new Account();
+			Account account1 = new Account();
+			Account account2 = new Account();
 
-			account.setAccountNumber(this.request.getSrcAccount()
+			account1.setAccountNumber(this.request.getSrcAccount()
 					.getAccountNumber());
-			operation.setSrcAccount(account);
+			operation.setSrcAccount(account1);
 
-			account.setAccountNumber(this.request.getDstAccount()
+			account2.setAccountNumber(this.request.getDstAccount()
 					.getAccountNumber());
-			operation.setDstAccount(account);
+			operation.setDstAccount(account2);
 
 			operation.setSrcStoplistInfo(this.srcStopListInfo);
 
